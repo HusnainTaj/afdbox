@@ -3,6 +3,14 @@
 ## What?
 A program that allows you to Compile (with NASM), Run (with DOSBox) and Debug (with AFD) .asm files by just double clicking on them.
 
+### Dependencies
+- NASM
+- DOSBox
+- AFD
+
+> None of these are included in `afdbox.exe` and must be installed by you separately.
+
+
 ## Why?
 I'm Lazy
 
