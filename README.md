@@ -12,7 +12,12 @@ Download and install the latest binary from the [Releases Page](https://github.c
 1. Run the `afdbox.exe`
 2. Specify the Path to NASM, DOSBox and AFD exe's
 3. Close `afdbox.exe`
-4. Double click any `.asm` file and it will open using `afdbox.exe`. If not Right-Click and select `afdbox.exe` in the `Open With` context menu.
+4. Double click any `.asm` file and it will open using `afdbox.exe`. If not, Right-Click and select `afdbox.exe` in the `Open With` context menu.
+
+### To always open `.asm` files using `afdbox.exe`
+1. Right click a `.asm` file and open its Properties.
+2. Click on "Change" Button next to "Opens with" text
+3. Select the `afdbox.exe` 
 
 ## Dependencies
 - NASM
