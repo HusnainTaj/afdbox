@@ -12,7 +12,7 @@ namespace afdbox
         static string cwd = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "afdbox");
         static void Main(string[] args)
         {
-            setFileAssociation(new string[] { ".asm" }, "ASM File", $"{Environment.ProcessPath}");
+            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath);
 
             SetupPaths();  
 
@@ -87,12 +87,10 @@ namespace afdbox
             if (Directory.Exists(Config.configPath)) Directory.Delete(Config.configPath, true);
         }
 
-
-
         public static int SetFileAssociation(string extension, string fileType, string programPath)
         {
-            int v = ExecuteCMDCommand("cmd", "/c ftype " + fileType + "=" + programPath);
-            v = ExecuteCMDCommand("cmd", "/c assoc " + extension + "=" + fileType);
+            ExecuteCMDCommand("cmd", "/c ftype " + fileType + "=" + programPath);
+            int v = ExecuteCMDCommand("cmd", "/c assoc " + extension + "=" + fileType);
             if (v != 0) return v;
             return v;
         }
