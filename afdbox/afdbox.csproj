@@ -5,7 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>$(MSBuildProjectName) 1.0</AssemblyName>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <Version>$(VersionPrefix)</Version>
   </PropertyGroup>
 

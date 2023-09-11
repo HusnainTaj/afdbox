@@ -16,7 +16,7 @@ Download and install the latest binary from the [Releases Page](https://github.c
 
 ### To always open `.asm` files using `afdbox.exe`
 1. Right click a `.asm` file and open its Properties.
-2. Click on "Change" Button next to "Opens with" text
+2. Click on "Change" Button next to the "Opens with" text
 3. Select the `afdbox.exe` 
 
 ## Dependencies
@@ -24,8 +24,7 @@ Download and install the latest binary from the [Releases Page](https://github.c
 - DOSBox
 - AFD
 
-> None of these are included in `afdbox.exe` and must be installed by you separately.
+> None of these are included in `afdbox.exe` and must be installed by you separately. [Download here](https://github.com/HusnainTaj/afdbox/releases/download/main/COAL-Setup.zip)
 
 ## Note
-- You can factory reset `afdbox.exe` by directly running it and entering `reset` command
-- If your program (.asm) has errors and can't be compiled, DOSBox will not launch and nothing will be shown. So make sure your program is compilable.
+- If you have moved any of the dependencies, you will have to re-enter their paths. You can do so by resetting `afdbox.exe` by directly running it and entering `r` command.

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace afdbox
 {
@@ -11,7 +12,7 @@ namespace afdbox
         static string cwd = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "afdbox");
         static void Main(string[] args)
         {
-            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath!);
+            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath);
 
             SetupPaths();  
 
@@ -20,10 +21,18 @@ namespace afdbox
             AsmFile? asmFile = AsmFile.FromArgs(args);
             if (asmFile is not null)
             {
-                Process.Start(nasmPath, $"\"{asmFile.Path}\" -o \"{Path.Combine(cwd, "out.com")}\"");
+                if (RunExe(nasmPath, $"\"{asmFile.Path}\" -o \"{Path.Combine(cwd, "out.com")}\"") == 0)
+                {
+                    Console.WriteLine("Compilation Success...");
+                    RunExe(dosboxPath, $"-conf {Path.Combine(cwd, "conf.txt")}", false);
+                   
+                }
+                else
+                {
+                    Console.WriteLine("\nCompilation Error. Press any key to exit.");
+                    Console.ReadKey();
+                }
 
-                Process.Start(dosboxPath, $"-conf {Path.Combine(cwd, "conf.txt")}");
-                
                 return;
             }
 
@@ -62,9 +71,9 @@ namespace afdbox
                     return current;
                 }
 
+                nasmPath = GetPath(Config.KEY_NASM_PATH, "NASM Path: ");
                 dosboxPath = GetPath(Config.KEY_DOSBOX_PATH, "DOSBox Path: ");
                 afdPath = GetPath(Config.KEY_AFD_PATH, "AFD Path: ");
-                nasmPath = GetPath(Config.KEY_NASM_PATH, "NASM Path: ");
             }
             catch (Exception)
             {
@@ -88,18 +97,17 @@ namespace afdbox
 
         public static int SetFileAssociation(string extension, string fileType, string programPath)
         {
-            Console.WriteLine(programPath);
-            ExecuteCMDCommand("cmd", $"/c ftype {fileType}=\"{programPath}\"");
-            int v = ExecuteCMDCommand("cmd", $"/c assoc {extension}={fileType}");
+            ExecuteCMDCommand($"/c ftype {fileType}=\"{programPath}\" \"%1\"");
+            int v = ExecuteCMDCommand($"/c assoc {extension}={fileType}");
             if (v != 0) return v;
             return v;
         }
-        public static int ExecuteCMDCommand(string exeFilename, string arguments)
+        public static int ExecuteCMDCommand(string arguments)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
             startInfo.UseShellExecute = true;
-            startInfo.FileName = exeFilename;
+            startInfo.FileName = "cmd";
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.Arguments = arguments;
             try
@@ -107,6 +115,27 @@ namespace afdbox
                 using (Process exeProcess = Process.Start(startInfo))
                 {
                     exeProcess.WaitForExit();
+                    return exeProcess.ExitCode;
+                }
+            }
+            catch
+            {
+                return 1;
+            }
+        }
+
+        public static int RunExe(string path, string arguments, bool waitForExit = true)
+        {
+            ProcessStartInfo startInfo = new(path, arguments);
+
+            try
+            {
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    if (waitForExit)
+                        exeProcess.WaitForExit();
+                    else return -1;
+
                     return exeProcess.ExitCode;
                 }
             }
