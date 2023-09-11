@@ -88,8 +88,9 @@ namespace afdbox
 
         public static int SetFileAssociation(string extension, string fileType, string programPath)
         {
-            ExecuteCMDCommand("cmd", "/c ftype " + fileType + "=" + programPath);
-            int v = ExecuteCMDCommand("cmd", "/c assoc " + extension + "=" + fileType);
+            Console.WriteLine(programPath);
+            ExecuteCMDCommand("cmd", $"/c ftype {fileType}=\"{programPath}\"");
+            int v = ExecuteCMDCommand("cmd", $"/c assoc {extension}={fileType}");
             if (v != 0) return v;
             return v;
         }
