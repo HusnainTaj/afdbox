@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 
 namespace afdbox
 {
@@ -12,7 +11,7 @@ namespace afdbox
         static string cwd = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "afdbox");
         static void Main(string[] args)
         {
-            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath);
+            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath!);
 
             SetupPaths();  
 
