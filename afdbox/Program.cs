@@ -14,9 +14,9 @@ namespace afdbox
         {
             setFileAssociation(new string[] { ".asm" }, "ASM File", $"{Environment.ProcessPath}");
 
-            setupPaths();  
+            SetupPaths();  
 
-            setupDir();
+            SetupDir();
 
             AsmFile? asmFile = AsmFile.FromArgs(args);
             if (asmFile is not null)
@@ -31,7 +31,7 @@ namespace afdbox
             Console.WriteLine("Press 'r' to reset afdbox. Press anything else to exit.");
             if(Console.ReadKey().Key == ConsoleKey.R)
             {
-                reset();
+                Reset();
                 Console.WriteLine("afdbox has been reset!");
             }
 
@@ -39,7 +39,7 @@ namespace afdbox
         }
 
 
-        static void setupPaths()
+        static void SetupPaths()
         {
             Directory.CreateDirectory(Config.configPath);
 
@@ -74,14 +74,14 @@ namespace afdbox
             }
         }
 
-        static void setupDir()
+        static void SetupDir()
         {
             Directory.CreateDirectory(cwd);
             if (!File.Exists(Path.Combine(cwd, "afd.exe"))) File.Copy(afdPath, Path.Combine(cwd, "afd.exe"));
             File.WriteAllLines(Path.Combine(cwd, "conf.txt"), new string[] { "[autoexec]", $"mount c: \"{cwd}\"", "c:", "afd out.com" });
         }
 
-        static void reset()
+        static void Reset()
         {
             if (Directory.Exists(cwd)) Directory.Delete(cwd, true);
             if (Directory.Exists(Config.configPath)) Directory.Delete(Config.configPath, true);
@@ -89,17 +89,14 @@ namespace afdbox
 
 
 
-        public static int setFileAssociation(string[] extensions, string fileType, string openCommandString)
+        public static int SetFileAssociation(string extension, string fileType, string programPath)
         {
-            int v = execute("cmd", "/c ftype " + fileType + "=" + openCommandString);
-            foreach (string ext in extensions)
-            {
-                v = execute("cmd", "/c assoc " + ext + "=" + fileType);
-                if (v != 0) return v;
-            }
+            int v = ExecuteCMDCommand("cmd", "/c ftype " + fileType + "=" + programPath);
+            v = ExecuteCMDCommand("cmd", "/c assoc " + extension + "=" + fileType);
+            if (v != 0) return v;
             return v;
         }
-        public static int execute(string exeFilename, string arguments)
+        public static int ExecuteCMDCommand(string exeFilename, string arguments)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
