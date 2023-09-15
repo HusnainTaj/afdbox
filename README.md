@@ -4,7 +4,7 @@
 A program that allows you to Compile (with NASM), Run (with DOSBox) and Debug (with AFD) .asm files by just double clicking on them.
 
 ## Why?
-I'm Lazy
+I'm Lazy.
 
 ## How?
 Download and install the latest binary from the [Releases Page](https://github.com/HusnainTaj/afdbox/releases).
