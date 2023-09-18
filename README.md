@@ -1,6 +1,8 @@
 # afdbox
 A portable program to quickly set up a Windows PC to run assembly programs.
 
+https://github.com/HusnainTaj/afdbox/assets/85726252/434f1942-cd94-4fc2-b505-3cc066ace0da
+
 ### PRO TIP: Use https://vscode.dev to write the programs if the PC does not have VS Code
 
 ## What?
