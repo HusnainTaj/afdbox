@@ -5,94 +5,34 @@ namespace afdbox
 {
     internal class Program
     {
-        static string dosboxPath = "";
-        static string afdPath = "";
-        static string nasmPath = "";
-
-        static string cwd = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "afdbox");
+        static readonly string exePath = Path.GetDirectoryName(Environment.ProcessPath)!;
+        static readonly string dosboxPath = Path.Combine(exePath, "DOSBoxPortable", "DOSBoxPortable.exe");
         static void Main(string[] args)
         {
-            SetFileAssociation(".asm" , "ASM File", Environment.ProcessPath);
+            SetFileAssociation(".asm", "ASM File", Environment.ProcessPath!);
 
-            SetupPaths();  
-
-            SetupDir();
+            UpdateConfig();
 
             AsmFile? asmFile = AsmFile.FromArgs(args);
             if (asmFile is not null)
             {
-                if (RunExe(nasmPath, $"\"{asmFile.Path}\" -o \"{Path.Combine(cwd, "out.com")}\"") == 0)
-                {
-                    Console.WriteLine("Compilation Success...");
-                    RunExe(dosboxPath, $"-conf {Path.Combine(cwd, "conf.txt")}", false);
-                   
-                }
-                else
-                {
-                    Console.WriteLine("\nCompilation Error. Press any key to exit.");
-                    Console.ReadKey();
-                }
+                File.Copy(asmFile.Path, Path.Combine(exePath, "program.asm"), true);
+
+                RunExe(dosboxPath, $"-noconsole -userconf -conf \"{Path.Combine(exePath, "config.conf")}\"", false);
 
                 return;
             }
-
-            Console.WriteLine("Press 'r' to reset afdbox. Press anything else to exit.");
-            if(Console.ReadKey().Key == ConsoleKey.R)
+            else
             {
-                Reset();
-                Console.WriteLine("afdbox has been reset!");
-            }
-
-            Console.WriteLine("\nExiting!");
-        }
-
-
-        static void SetupPaths()
-        {
-            Directory.CreateDirectory(Config.configPath);
-
-            try
-            {
-                string GetPath(string key, string msg)
-                {
-                    bool isUpdated = false;
-                    string? current = Config.Get(key);
-
-                    while (string.IsNullOrEmpty(current) || !File.Exists(current))
-                    {
-                        Console.Write(msg);
-                        current = Console.ReadLine() ?? "";
-                        current = current.Replace("\"", "");
-                        isUpdated = true;
-                    }
-
-                    if (isUpdated) Config.Set(key, current);
-
-                    return current;
-                }
-
-                nasmPath = GetPath(Config.KEY_NASM_PATH, "NASM Path: ");
-                dosboxPath = GetPath(Config.KEY_DOSBOX_PATH, "DOSBox Path: ");
-                afdPath = GetPath(Config.KEY_AFD_PATH, "AFD Path: ");
-            }
-            catch (Exception)
-            {
+                Console.WriteLine("afdbox setup successful.");
+                Console.WriteLine("\nsource code: https://github.com/HusnainTaj/afdbox");
+                Console.WriteLine("\nPress any key to exit...");
                 Console.ReadKey();
-                throw;
             }
         }
-
-        static void SetupDir()
+        static void UpdateConfig()
         {
-            Directory.CreateDirectory(cwd);
-            if (!File.Exists(Path.Combine(cwd, "afd.exe"))) File.Copy(afdPath, Path.Combine(cwd, "afd.exe"));
-            File.WriteAllLines(Path.Combine(cwd, "conf.txt"), new string[] { "[autoexec]", $"mount c: \"{cwd}\"", "c:", "afd out.com" });
-        }
-
-        static void Reset()
-        {
-            if (Directory.Exists(cwd)) Directory.Delete(cwd, true);
-            if (Directory.Exists(Config.configPath)) Directory.Delete(Config.configPath, true);
+            File.WriteAllLines(Path.Combine(exePath, "config.conf"), new string[] { "[autoexec]", $"mount c: \"{exePath}\"", "c:","nasm program.asm -o program.com", "afd program.com" });
         }
 
         public static int SetFileAssociation(string extension, string fileType, string programPath)
@@ -123,7 +63,6 @@ namespace afdbox
                 return 1;
             }
         }
-
         public static int RunExe(string path, string arguments, bool waitForExit = true)
         {
             ProcessStartInfo startInfo = new(path, arguments);
