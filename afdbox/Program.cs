@@ -11,7 +11,9 @@ namespace afdbox
         {
             SetFileAssociation(".asm", "ASM File", Environment.ProcessPath!);
 
-            UpdateConfig();
+            bool debugMode = (Config.Get("debug") ?? "debug") == "debug";
+
+            UpdateConfig(debugMode);
 
             AsmFile? asmFile = AsmFile.FromArgs(args);
             if (asmFile is not null)
@@ -26,13 +28,26 @@ namespace afdbox
             {
                 Console.WriteLine("afdbox setup successful.");
                 Console.WriteLine("\nsource code: https://github.com/HusnainTaj/afdbox");
-                Console.WriteLine("\nPress any key to exit...");
-                Console.ReadKey();
+
+                Console.WriteLine($"\nRunning in {(debugMode ? "Debug" : "Run")} mode.");
+
+                Console.WriteLine("\nPress any key change mode...");
+
+                while (true)
+                {
+                    Console.ReadKey();
+
+                    debugMode = !debugMode;
+
+                    Config.Set("debug", debugMode ? "debug" : "run");
+
+                    Console.WriteLine($"\nSwitched to {(debugMode ? "Debug" : "Run")} mode.");
+                }
             }
         }
-        static void UpdateConfig()
+        static void UpdateConfig(bool debug)
         {
-            File.WriteAllLines(Path.Combine(exePath, "config.conf"), new string[] { "[autoexec]", $"mount c: \"{exePath}\"", "c:","nasm program.asm -o program.com", "afd program.com" });
+            File.WriteAllLines(Path.Combine(exePath, "config.conf"), new string[] { "[autoexec]", $"mount c: \"{exePath}\"", "c:","nasm program.asm -o program.com", debug ? "afd program.com" : "program.com" });
         }
 
         public static int SetFileAssociation(string extension, string fileType, string programPath)

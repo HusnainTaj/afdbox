@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <Version>$(VersionPrefix)</Version>
-    <VersionPrefix>2.0</VersionPrefix>
+    <VersionPrefix>2.1</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
