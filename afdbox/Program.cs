@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Win32;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace afdbox
@@ -9,7 +11,12 @@ namespace afdbox
         static readonly string dosboxPath = Path.Combine(exePath, "DOSBoxPortable", "DOSBoxPortable.exe");
         static void Main(string[] args)
         {
-            SetFileAssociation(".asm", "ASM File", Environment.ProcessPath!);
+            if(SetFileAssociation(".asm", "asmfile", Environment.ProcessPath!) != 0)
+            {
+                Console.WriteLine("Automatic File Association Failed.");
+                Console.WriteLine("Try running afdbox as Admin.");
+                Console.WriteLine("Or Associate .asm files with afdbox manually through properties by changing 'opens with' for .asm files.\n");
+            }
 
             bool debugMode = (Config.Get("debug") ?? "debug") == "debug";
 
@@ -18,7 +25,28 @@ namespace afdbox
             AsmFile? asmFile = AsmFile.FromArgs(args);
             if (asmFile is not null)
             {
-                File.Copy(asmFile.Path, Path.Combine(exePath, "program.asm"), true);
+                try
+                {
+                    File.Copy(asmFile.Path, Path.Combine(exePath, "program.asm"), true);
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine("Error");
+                    Console.WriteLine("asm file is being used by another process.");
+                    Console.WriteLine("Use an editor like VS Code that does not lock the file while editing.");
+                    Console.WriteLine("\nPress any key to exit...");
+                    Console.ReadKey();
+                    return;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine("Error");
+                    Console.WriteLine("asm file is stored in a protected directory.");
+                    Console.WriteLine("This can usually be fixed by moving both labsetup folder and asm files in drives other than C: ");
+                    Console.WriteLine("\nPress any key to exit...");
+                    Console.ReadKey();
+                    return;
+                }
 
                 RunExe(dosboxPath, $"-noconsole -userconf -conf \"{Path.Combine(exePath, "config.conf")}\"", false);
 
@@ -57,6 +85,7 @@ namespace afdbox
             if (v != 0) return v;
             return v;
         }
+
         public static int ExecuteCMDCommand(string arguments)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
