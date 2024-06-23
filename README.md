@@ -32,5 +32,7 @@ This mode will just execute the program after compilation. This is useful when t
 ### Changing Modes
 Open `afdbox.exe` and press any key to switch between `Run` and `Debug` Mode. 
 
-## Note
-- If you have moved `labsetup` folder after running `afdbox.exe` once, you will have to re-run `afdbox.exe` for the program to work again.
+<hr/>
+
+> [!note]
+> If you have moved `labsetup` folder after running `afdbox.exe` once, you will have to re-run `afdbox.exe` for the program to work again.
